@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            background-color: black;
+            margin: auto;
+            width: 600px;
+        }
+
+        div {
+            color: white;
+            font-family: sans-serif;
+            max-width: 400px;
+            margin: auto;
+        }
+
+        input {
+            width: 93%;
+            border: 10px solid white;
+        }
+
+        select {
+            width: 370px;
+            height: 40px;
+            border-radius: 5px;
+        }
+
+        #dateInput {
+            width: 40%;
+        }
+
+        #submit {
+            transition: 0.4s;
+            background-color: grey;
+            height: 30px;
+            color: white;
+            margin-left: 10px;
+            border: none !important;
+            margin-top: 10px;
+        }
+
+        #submit:hover {
+            background-color: white;
+            color: black;
+        }
+        
+        .radioBtn {
+            width: auto !important;
+        }
+    </style>
+    <!-- Date picker code begins here -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+    <script>
+    $( function() {
+         $( "#appDate" ).datepicker({
+             minDate: 0,
+             dateFormat: 'yy-mm-dd'
+        });
+    } );
+    </script>
+    <!-- End datepicker code -->
+    <script>
+
+        function showAvailableTimeOnThisDate(date) {
+            var xmlhttp = new XMLHttpRequest();
+            var branchName = document.getElementById("branchName").value;
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200)
+                    document.getElementById("timetable").innerHTML = this.responseText;
+            }
+            xmlhttp.open("GET", "../utility/showAvailableTimeByDate.php?date=" + date +"&branchName=" + branchName, true);
+            xmlhttp.send();
+        }
+
+        function showBranchByState(state) {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200)
+                    document.getElementById("branchList").innerHTML = this.responseText;
+            }
+            xmlhttp.open("GET", "../utility/showBranchByState.php?state=" + state, true);
+            xmlhttp.send();
+            if (state != "") {
+                document.getElementById("appDate").disabled = false;    
+            }
+            else 
+                document.getElementById("appDate").disabled = true;
+        }
+    </script>
+</head>
+
+<body>
+    <div>
+        <form method="post" action="processCustomer.php">
+            <fieldset>
+                <h1>Customer Registration</h1>
+                <p>Enter Name:</p>
+                <p>
+                    <input type="text" name="name" placeholder="John Doe" required>
+                </p>
+                <p>Email:</p>
+                <p>
+                    <input type="text" name="email" placeholder="jDoe@corp.co" required>
+                </p>
+                <p>Phone Number:</p>
+                <p>
+                    <input type="text" name="phoneNum" placeholder="0198765432" required>
+                </p>
+                <p>IC Number:</p>
+                <p>
+                    <input type="text" name="ic" placeholder="Your identification card number" required>
+                </p>
+                <p>Please select your state: </p>
+                <p>
+                    <select name="state" onchange="showBranchByState(this.value)" required>
+                        <option></option>
+                        <option>Wilayah Persekutuan</option>
+                        <option>Selangor</option>
+                        <option>Terengganu</option>
+                        <option>Sabah</option>
+                        <option>Sarawak</option>
+                        <option>Johor</option>
+                        <option>Kedah</option>
+                        <option>Kelantan</option>
+                        <option>Melaka</option>
+                        <option>Negeri Sembilan</option>
+                        <option>Pahang</option>
+                        <option>Penang</option>
+                        <option>Perak</option>
+                        <option>Perlis</option>
+                    </select>
+                </p>
+                <div id="branchList">
+
+                </div>
+                <p>
+                    Please enter a date:
+                    <p><input type="text" name="appDate" id="appDate" onchange="showAvailableTimeOnThisDate(this.value)" disabled=true></p>
+                </p>
+                <div id="timetable"></div>
+                <br>
+                <input name="regCust" type="submit" value="Submit" id="submit">
+            </fieldset>
+        </form>
+    </div>
+</body>
+
+</html>
